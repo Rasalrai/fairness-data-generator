@@ -1,18 +1,17 @@
 import time
-
 import sys
-
 import math
 import numpy
-
 import pickle
+import pandas as pd
 
 
 def the_ratio(n, k):
     m = 1
     for i in range(1, n):
-        m = m*(k + i)
+        m = m * (k + i)
     m = round(m / math.factorial(n - 1))
+    print(m)
     return m
 
 
@@ -115,6 +114,11 @@ def LoadTXTTheDataSet(fname):
 
     return X
 
+def read_into_dataframe(nparray):
+    structured_data = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
+    print(structured_data)
+    return structured_data
+
 
 ######################################
 
@@ -126,7 +130,7 @@ if __name__ == '__main__':
         k = int(sys.argv[1])
         print('Comand line params: ',end='')
     else:
-        n = 4
+        n = 8
         # k should be a multiple of n
         # (otherwise a potentially incomplete data set is generated)
         k = n*2
@@ -140,26 +144,28 @@ if __name__ == '__main__':
     start_time = time.time()
     X = GenerateSimpTheDataSet(n, k)
     print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
+    
+    read_into_dataframe(X)
 
-    # Zapisywanie danych (wersja binarna)
-    # (dane zapisane w ponizszy sposob odczytuje procedura LoadBINTheDataSet))
-    #
-    bin_fname = "Set(%02i,%02i).bin" % (n, k)
-    start_time = time.time()
-    SaveBINTheDataSet(X, bin_fname)
-    print("SaveBIN: %.2f [s]" % (time.time() - start_time))
+    # # Zapisywanie danych (wersja binarna)
+    # # (dane zapisane w ponizszy sposob odczytuje procedura LoadBINTheDataSet))
+    # #
+    # bin_fname = "Set(%02i,%02i).bin" % (n, k)
+    # start_time = time.time()
+    # SaveBINTheDataSet(X, bin_fname)
+    # print("SaveBIN: %.2f [s]" % (time.time() - start_time))
 
-    # Zapisywanie danych (wersja tekstowa)
-    # -- alternatywa do wersji binarnej
-    # -- NIE UZYWAC dla duzych zbiorow danych (jest zaskakujaco powolna!)
-    # (dane zapisane w ponizszy sposob odczytuje procedura LoadTXTTheDataSet))
-    #
-    txt_fname = "Set(%02i,%02i).txt" % (n, k)
-    start_time = time.time()
-    SaveTXTTheDataSet(X, txt_fname)
-    print("SaveTXT: %.2f [s]" % (time.time() - start_time))
+    # # Zapisywanie danych (wersja tekstowa)
+    # # -- alternatywa do wersji binarnej
+    # # -- NIE UZYWAC dla duzych zbiorow danych (jest zaskakujaco powolna!)
+    # # (dane zapisane w ponizszy sposob odczytuje procedura LoadTXTTheDataSet))
+    # #
+    # txt_fname = "Set(%02i,%02i).txt" % (n, k)
+    # start_time = time.time()
+    # SaveTXTTheDataSet(X, txt_fname)
+    # print("SaveTXT: %.2f [s]" % (time.time() - start_time))
 
-    print("Total time: %.2f [s]" % (time.time() - prog_start_time))
+    # print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
-    # k - rozmiar zbioru, 8 - dwie macierze pom
+    # # k - rozmiar zbioru, 8 - dwie macierze pom
 
