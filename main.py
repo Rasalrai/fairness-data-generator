@@ -115,12 +115,15 @@ def LoadTXTTheDataSet(fname):
     return X
 
 def read_into_dataframe(nparray, k):
-    structured_data = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
+    df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
     count_col = [k] * numpy.shape(nparray)[0]
-    #print(count_col)
-    structured_data['count'] = count_col 
-    print(structured_data)
-    return structured_data
+    df['count'] = count_col 
+    df['ir'] = (df.m_tp + df.m_fp + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.f_tn + df.f_fn)
+    print(df)
+    #check for ir in the middle
+    #print(df.loc[100,])
+    
+    return df
 
 
 ######################################
