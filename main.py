@@ -114,8 +114,11 @@ def LoadTXTTheDataSet(fname):
 
     return X
 
-def read_into_dataframe(nparray):
+def read_into_dataframe(nparray, k):
     structured_data = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
+    count_col = [k] * numpy.shape(nparray)[0]
+    #print(count_col)
+    structured_data['count'] = count_col 
     print(structured_data)
     return structured_data
 
@@ -145,7 +148,7 @@ if __name__ == '__main__':
     X = GenerateSimpTheDataSet(n, k)
     print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
     
-    read_into_dataframe(X)
+    read_into_dataframe(X, k)
 
     # # Zapisywanie danych (wersja binarna)
     # # (dane zapisane w ponizszy sposob odczytuje procedura LoadBINTheDataSet))
