@@ -118,11 +118,21 @@ def read_into_dataframe(nparray, k):
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
     count_col = [k] * numpy.shape(nparray)[0]
     df['count'] = count_col 
-    df['ir'] = (df.m_tp + df.m_fp + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.f_tn + df.f_fn)
+    df['ir'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
     #to zeros?
     #df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
+    
+    df.replace([numpy.inf, -numpy.inf], numpy.nan, inplace=True)
+    # Drop rows with NaN
+    df.dropna(inplace=True)
+    
     #equal opportunity ratio TP/(TP+FN)
-    df['eq_opp_ratio'] = df.f_tp/(df.f_tp + df.f_fn)
+    
+    df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
+    df['f_tpr'] = df.f_tp/(df.f_tp + df.f_fn)
+    
+    
+    df.dropna(inplace=True)
 
     pd.set_option('display.max_rows', None)
     
