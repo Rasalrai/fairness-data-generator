@@ -119,6 +119,13 @@ def read_into_dataframe(nparray, k):
     count_col = [k] * numpy.shape(nparray)[0]
     df['count'] = count_col 
     df['ir'] = (df.m_tp + df.m_fp + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.f_tn + df.f_fn)
+    #to zeros?
+    #df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
+    #equal opportunity ratio TP/(TP+FN)
+    df['eq_opp_ratio'] = df.f_tp/(df.f_tp + df.f_fn)
+
+    pd.set_option('display.max_rows', None)
+    
     print(df)
     #check for ir in the middle
     #print(df.loc[100,])
