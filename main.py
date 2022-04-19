@@ -130,6 +130,7 @@ def read_into_dataframe(nparray, k):
     
     df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
     df['f_tpr'] = df.f_tp/(df.f_tp + df.f_fn)
+    df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
     
     
     df.dropna(inplace=True)
