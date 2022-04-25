@@ -115,10 +115,10 @@ def LoadTXTTheDataSet(fname):
     return X
 
 def read_into_dataframe(nparray, k):
-    df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
-    count_col = [k] * numpy.shape(nparray)[0]
-    df['count'] = count_col 
-    df['ir'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
+    df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn']) 
+    df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
+    df['ir'] = (df.f_tp + df.f_fp + df.m_tp + df.m_fp) / (df.f_tn + df.f_fn + df.m_tn + df.m_fn)
+    
     #to zeros?
     #df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
     
@@ -126,6 +126,7 @@ def read_into_dataframe(nparray, k):
     # Drop rows with NaN
     df.dropna(inplace=True)
     
+    df.iloc[:,8:10] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     #equal opportunity ratio TP/(TP+FN)
     
     df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
@@ -139,7 +140,8 @@ def read_into_dataframe(nparray, k):
     
     print(df)
     #check for ir in the middle
-    #print(df.loc[100,])
+    print(df.loc[9200,])
+    #numpy.savetxt('df', df.values)
     
     return df
 
