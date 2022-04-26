@@ -1,11 +1,12 @@
 import time
 import sys
 import math
-from unicodedata import category
 import numpy
 import pickle
 import pandas as pd
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 
 def the_ratio(n, k):
@@ -143,6 +144,9 @@ def read_into_dataframe(nparray, k):
     #pd.set_option('display.max_rows', None)
     
     print(df1)
+    sns.heatmap(df1.pivot('ir', 'tpr_ratio',values='counts'))
+    plt.show()
+
     #check for ir in the middle
     #print(df.loc[9200,])
     #numpy.savetxt('df', df.values)
