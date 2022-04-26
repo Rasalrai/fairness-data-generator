@@ -155,6 +155,7 @@ if __name__ == '__main__':
     print('n=%i, k=%i'%(n,k))
 
     prog_start_time = time.time()
+    bin_fname = "Set(%02i,%02i).bin" % (n, k)
 
     # Data generating
     # start_time = time.time()
@@ -167,7 +168,6 @@ if __name__ == '__main__':
     # print("SaveBIN: %.2f [s]" % (time.time() - start_time))
 
     # Data loading - bin
-    bin_fname = "Set(%02i,%02i).bin" % (n, k)
     X = load_bin_dataset(bin_fname)
     
     # Data saving - txt
