@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-
 def the_ratio(n, k):
     m = 1
     for i in range(1, n):
@@ -18,9 +17,9 @@ def the_ratio(n, k):
     return m
 
 
-def genSet_k_do_increment (k,X):
+def genset_k_do_increment(k, X):
     a = np.shape(X)
-    lastNZ = np.amax(np.matmul((X>0),np.diag(range(1, k+1))), axis=1)
+    lastNZ = np.amax(np.matmul((X>0), np.diag(range(1, k+1))), axis=1)
     b = np.shape(lastNZ)
     k1lastNZ = k+1-lastNZ
     Y = np.repeat(X,k1lastNZ, axis=0)
@@ -34,7 +33,7 @@ def genSet_k_do_increment (k,X):
     return Y
 
 
-def genSet_k_by_inc (n, k):
+def genset_k_by_inc(n, k):
 
     m = the_ratio(n, k)
 
@@ -42,13 +41,12 @@ def genSet_k_by_inc (n, k):
     for i in range(0, n):
         X[i][i] = 1
     sm = 1 
-    #sum(X(1,:))
     mX = the_ratio(n, sm)
     while (sm < k):
         tm = time.time()
         sm = sm + 1
         mX1 = the_ratio(n, sm)
-        X[0:mX1-1,:] = genSet_k_do_increment(n, X[0:mX - 1, :])
+        X[0:mX1-1, :] = genset_k_do_increment(n, X[0:mX - 1, :])
         mX = mX1
         print("iteration:%i -- %.2f [s]" % (k - sm, time.time() - tm))
         
@@ -56,11 +54,11 @@ def genSet_k_by_inc (n, k):
     return X
 
 
-def GenerateSimpTheDataSet(n, k):
+def generate_dataset(n, k):
 
     print("Generating simplex data",end='')
     print('\n')
-    X = genSet_k_by_inc(n, k)
+    X = genset_k_by_inc(n, k)
     print(" -- Done")
 
     mn = np.shape(X)
@@ -70,7 +68,7 @@ def GenerateSimpTheDataSet(n, k):
     return X
 
 
-def SaveBINTheDataSet(X, fname):
+def save_bin_dataset(X, fname):
 
     print("Saving BIN file: %s" % fname, end='')
     with open(fname, 'wb') as f:
@@ -78,17 +76,16 @@ def SaveBINTheDataSet(X, fname):
     print(" -- Done")
 
 
-def SaveTXTTheDataSet(X, fname):
+def save_txt_dataset(X, fname):
 
     print("Saving TXT file: %s" % fname, end='')
     np.savetxt(fname, X, fmt='%i')
     print(" -- Done")
 
 
-def LoadBINTheDataSet(fname):
+def load_bin_dataset(fname):
 
     print("Loading BIN file: %s" % fname, end='')
-    #X = np.load(fname,allow_pickle=True)
     with open(fname, 'rb') as f:
         X = pickle.load(f)
     print(" -- Done")
@@ -100,7 +97,7 @@ def LoadBINTheDataSet(fname):
     return X
 
 
-def LoadTXTTheDataSet(fname):
+def load_txt_dataset(fname):
 
     print("Loading TXT file: %s" % fname, end='')
     X = np.loadtxt(fname, dtype=np.int8)
@@ -112,6 +109,7 @@ def LoadTXTTheDataSet(fname):
 
     return X
 
+
 def read_into_dataframe(nparray, k):
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn']) 
     df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
@@ -120,7 +118,8 @@ def read_into_dataframe(nparray, k):
     df.replace([np.inf, -np.inf], 0, inplace=True)
     
     df.iloc[:,8:10] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
-    #equal opportunity ratio TP/(TP+FN)
+    
+    # equal opportunity ratio TP/(TP+FN)
     
     df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
     df['f_tpr'] = df.f_tp/(df.f_tp + df.f_fn)
@@ -130,13 +129,13 @@ def read_into_dataframe(nparray, k):
     df.replace(np.NaN, 0, inplace=True)
     df.iloc[:,12] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
-    #histogram logic
+    # histogram logic
     df1 = df.groupby(['ir', 'tpr_ratio']).size().reset_index(name='counts')
     
-    #pd.set_option('display.max_rows', None)
+    # pd.set_option('display.max_rows', None)
     
     print(df1)
-    sns.heatmap(df1.pivot('ir', 'tpr_ratio',values='counts'), cmap="PiYG", annot=True)
+    sns.heatmap(df1.pivot('ir', 'tpr_ratio', values='counts'), cmap="PiYG", annot=True)
     plt.show()
     return df
 
@@ -146,43 +145,37 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         n = int(sys.argv[1])
         k = int(sys.argv[1])
-        print('Comand line params: ',end='')
+        print('Comand line params: ', end='')
     else:
+        # k - size of set; n -  error matrix combinations
+        # k should be a multiple of n, (otherwise a potentially incomplete data set is generated)
         n = 8
-        #k should be a multiple of n
-        #(otherwise a potentially incomplete data set is generated)
-        k = n*2
-        print('Default params: ',end='')
+        k = n * 2
+        print('Default params: ', end='')
     print('n=%i, k=%i'%(n,k))
 
     prog_start_time = time.time()
 
     # Data generating
-    
     # start_time = time.time()
-    # X = GenerateSimpTheDataSet(n, k)
+    # X = generate_dataset(n, k)
     # print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
     
-    #read_into_dataframe(X, k)
-
-    # Zapisywanie danych (wersja binarna)
-    # (dane zapisane w ponizszy sposob odczytuje procedura LoadBINTheDataSet))
-    #
-    bin_fname = "Set(%02i,%02i).bin" % (n, k)
-    X = LoadBINTheDataSet(bin_fname)
-    read_into_dataframe(X, k)
-    
+    # Data saving - bin
     # start_time = time.time()
-    # SaveBINTheDataSet(X, bin_fname)
+    # save_bin_dataset(X, bin_fname)
     # print("SaveBIN: %.2f [s]" % (time.time() - start_time))
 
-
+    # Data loading - bin
+    bin_fname = "Set(%02i,%02i).bin" % (n, k)
+    X = load_bin_dataset(bin_fname)
+    
+    # Data saving - txt
     # txt_fname = "Set(%02i,%02i).txt" % (n, k)
     # start_time = time.time()
-    # SaveTXTTheDataSet(X, txt_fname)
+    # save_txt_dataset(X, txt_fname)
     # print("SaveTXT: %.2f [s]" % (time.time() - start_time))
-
-    # print("Total time: %.2f [s]" % (time.time() - prog_start_time))
-
-    # # k - rozmiar zbioru, 8 - dwie macierze pom
+    
+    read_into_dataframe(X, k)
+    print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
