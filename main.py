@@ -109,14 +109,22 @@ def load_txt_dataset(fname):
 
     return X
 
-
+def create_heatmap(df, fair_measure):
+    df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
+    sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=True)
+    print(df1)
+    plt.show()
+        
+    
 def read_into_dataframe(nparray, k):
+    
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn']) 
     df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
     df['ir'] = (df.f_tn + df.f_fn + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.m_tp + df.m_fp) 
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
     
+    # normalize gr & ir
     df.iloc[:,8:10] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
     # equal opportunity ratio TP/(TP+FN)
@@ -127,16 +135,11 @@ def read_into_dataframe(nparray, k):
     df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
+    
+    # normalize fairness measure 
     df.iloc[:,12] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
-    # histogram logic
-    df1 = df.groupby(['ir', 'tpr_ratio']).size().reset_index(name='counts')
-    
-    # pd.set_option('display.max_rows', None)
-    
-    print(df1)
-    sns.heatmap(df1.pivot('ir', 'tpr_ratio', values='counts'), cmap="PiYG", annot=True)
-    plt.show()
+    create_heatmap(df, 'tpr_ratio')
     return df
 
 
