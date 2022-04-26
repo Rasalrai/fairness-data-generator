@@ -1,9 +1,11 @@
 import time
 import sys
 import math
+from unicodedata import category
 import numpy
 import pickle
 import pandas as pd
+import matplotlib as plt
 
 
 def the_ratio(n, k):
@@ -117,31 +119,34 @@ def LoadTXTTheDataSet(fname):
 def read_into_dataframe(nparray, k):
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn']) 
     df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
-    df['ir'] = (df.f_tp + df.f_fp + df.m_tp + df.m_fp) / (df.f_tn + df.f_fn + df.m_tn + df.m_fn)
+    df['ir'] = (df.f_tn + df.f_fn + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.m_tp + df.m_fp) 
     
     #to zeros?
     #df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
     
-    df.replace([numpy.inf, -numpy.inf], numpy.nan, inplace=True)
-    # Drop rows with NaN
-    df.dropna(inplace=True)
+    df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
     
     df.iloc[:,8:10] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     #equal opportunity ratio TP/(TP+FN)
     
     df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
     df['f_tpr'] = df.f_tp/(df.f_tp + df.f_fn)
+    df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
     df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
+    df.replace([numpy.inf, -numpy.inf], 0, inplace=True)
+    df.replace(numpy.NaN, 0, inplace=True)
+    df.iloc[:,12] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
+    ###histogram logic
+    df1 = df.groupby(['ir', 'tpr_ratio']).size().reset_index(name='counts')
     
-    df.dropna(inplace=True)
-
-    pd.set_option('display.max_rows', None)
+    #pd.set_option('display.max_rows', None)
     
-    print(df)
+    print(df1)
     #check for ir in the middle
-    print(df.loc[9200,])
+    #print(df.loc[9200,])
     #numpy.savetxt('df', df.values)
+
     
     return df
 
@@ -167,16 +172,19 @@ if __name__ == '__main__':
 
     # Generowanie danych
     #
-    start_time = time.time()
-    X = GenerateSimpTheDataSet(n, k)
-    print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
+    # start_time = time.time()
+    # X = GenerateSimpTheDataSet(n, k)
+    # print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
     
-    read_into_dataframe(X, k)
+    #read_into_dataframe(X, k)
 
-    # # Zapisywanie danych (wersja binarna)
-    # # (dane zapisane w ponizszy sposob odczytuje procedura LoadBINTheDataSet))
-    # #
-    # bin_fname = "Set(%02i,%02i).bin" % (n, k)
+    # Zapisywanie danych (wersja binarna)
+    # (dane zapisane w ponizszy sposob odczytuje procedura LoadBINTheDataSet))
+    #
+    bin_fname = "Set(%02i,%02i).bin" % (n, k)
+    X = LoadBINTheDataSet(bin_fname)
+    read_into_dataframe(X, k)
+    
     # start_time = time.time()
     # SaveBINTheDataSet(X, bin_fname)
     # print("SaveBIN: %.2f [s]" % (time.time() - start_time))
