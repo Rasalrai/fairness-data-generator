@@ -9,6 +9,7 @@ import seaborn as sns
 
 
 def the_ratio(n, k):
+    
     m = 1
     for i in range(1, n):
         m = m * (k + i)
@@ -18,6 +19,7 @@ def the_ratio(n, k):
 
 
 def genset_k_do_increment(k, X):
+    
     a = np.shape(X)
     lastNZ = np.amax(np.matmul((X>0), np.diag(range(1, k+1))), axis=1)
     b = np.shape(lastNZ)
@@ -110,6 +112,7 @@ def load_txt_dataset(fname):
     return X
 
 def create_heatmap(df, fair_measure):
+    
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
     sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=True)
     print(df1)
@@ -118,7 +121,8 @@ def create_heatmap(df, fair_measure):
     
 def read_into_dataframe(nparray, k):
     
-    df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn']) 
+    df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
+    # add group ratio & imbalance ratio 
     df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
     df['ir'] = (df.f_tn + df.f_fn + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.m_tp + df.m_fp) 
     
@@ -127,11 +131,12 @@ def read_into_dataframe(nparray, k):
     # normalize gr & ir
     df.iloc[:,8:10] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
-    # equal opportunity ratio TP/(TP+FN)
-    
     df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
     df['f_tpr'] = df.f_tp/(df.f_tp + df.f_fn)
     df.replace([np.inf, -np.inf], 0, inplace=True)
+    
+    # calculate fairness measure
+    # equal opportunity ratio TP/(TP+FN)
     df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
