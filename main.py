@@ -144,6 +144,7 @@ def read_into_dataframe(nparray, k):
     # normalize fairness measure 
     df.iloc[:,12] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
+    print(df)
     create_heatmap(df, 'tpr_ratio')
     return df
 
