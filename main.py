@@ -118,7 +118,7 @@ def get_group_ratio(df):
 
 
 def get_imbalance_ratio(df):
-    df['ir'] = (df.f_tn + df.f_fn + df.m_tn + df.m_fn) / (df.f_tp + df.f_fp + df.m_tp + df.m_fp)
+    df['ir'] =  (df.f_tp + df.f_fp + df.m_tp + df.m_fp) / (df.f_tn + df.f_fn + df.m_tn + df.m_fn)
     return df
 
 
@@ -130,10 +130,15 @@ def get_group_minority_ratio(df):
     return
 
 
+def get_true_positive_rate_ratio(df):
+    df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
+    return df
+
+
 def create_heatmap(df, fair_measure):
     
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
-    sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=True)
+    sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
     print(df1)
     plt.show()
         
@@ -141,9 +146,9 @@ def create_heatmap(df, fair_measure):
 def read_into_dataframe(nparray, k):
     
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
-    # add group ratio & imbalance ratio 
-    df = get_group_ratio(df)
-    df = get_imbalance_ratio(df)
+    
+    get_group_ratio(df)
+    get_imbalance_ratio(df)
     
     #pozytywna to mniejszosciowa ma byc
     #gr1/ gr1+gr2 = minority ratio, dla grup i dla klas 
@@ -160,7 +165,8 @@ def read_into_dataframe(nparray, k):
     
     # calculate fairness measure
     # equal opportunity ratio TP/(TP+FN)
-    df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
+    get_true_positive_rate_ratio(df)
+    
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
     
