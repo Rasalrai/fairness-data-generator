@@ -147,6 +147,11 @@ def get_females_true_pos_rate(df):
     return df
 
 
+def get_true_pos_rate_diff(df):
+    df['tpr_diff'] = df.f_tpr - df.m_tpr
+    return df
+
+
 def create_heatmap(df, fair_measure):
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
     sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
@@ -179,6 +184,7 @@ def read_into_dataframe(nparray, k):
     # calculate fairness measures
     # equal opportunity ratio TP/(TP+FN)
     get_true_positive_rate_ratio(df)
+    get_true_pos_rate_diff(df)
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
@@ -187,7 +193,7 @@ def read_into_dataframe(nparray, k):
     # df.iloc[:,14] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
     print(df)
-    create_heatmap(df, 'tpr_ratio')
+    create_heatmap(df, 'tpr_diff')
     return df
 
 
