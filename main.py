@@ -132,7 +132,7 @@ def get_group_minority_ratio(df):
     return df
 
 
-def get_true_positive_rate_ratio(df):
+def get_true_pos_rate_ratio(df):
     df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
     return df
 
@@ -183,7 +183,7 @@ def read_into_dataframe(nparray, k):
     
     # calculate fairness measures
     # equal opportunity ratio TP/(TP+FN)
-    get_true_positive_rate_ratio(df)
+    get_true_pos_rate_ratio(df)
     get_true_pos_rate_diff(df)
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
