@@ -161,7 +161,7 @@ def create_heatmap(df, fair_measure):
 
 def create_histogram(df, ir_selected, fair_measure):
     df1 = df[df["ir"] == ir_selected]
-    df1 = df[[fair_measure]]
+    df1 = df1[[fair_measure]]
     hist = df1.hist(bins=100)
     plt.show()
         
@@ -195,7 +195,6 @@ def read_into_dataframe(nparray, k):
     get_true_pos_rate_diff(df)
     
     
-    
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
     
@@ -205,7 +204,7 @@ def read_into_dataframe(nparray, k):
     print(df)
     #create_heatmap(df, 'tpr_diff')
     
-    create_histogram(df, 1.0, 'tpr_diff')
+    create_histogram(df, 15.0, 'tpr_diff')
     return df
 
 
