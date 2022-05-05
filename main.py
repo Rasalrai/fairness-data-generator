@@ -157,6 +157,13 @@ def create_heatmap(df, fair_measure):
     sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
     print(df1)
     plt.show()
+    
+
+def create_histogram(df, ir_selected, fair_measure):
+    df1 = df[df["ir"] == ir_selected]
+    df1 = df[[fair_measure]]
+    hist = df1.hist(bins=100)
+    plt.show()
         
     
 def read_into_dataframe(nparray, k):
@@ -184,7 +191,10 @@ def read_into_dataframe(nparray, k):
     # calculate fairness measures
     # equal opportunity ratio TP/(TP+FN)
     get_true_pos_rate_ratio(df)
+    # equal opportunity difference
     get_true_pos_rate_diff(df)
+    
+    
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
@@ -193,7 +203,9 @@ def read_into_dataframe(nparray, k):
     # df.iloc[:,14] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
     print(df)
-    create_heatmap(df, 'tpr_diff')
+    #create_heatmap(df, 'tpr_diff')
+    
+    create_histogram(df, 1.0, 'tpr_diff')
     return df
 
 
