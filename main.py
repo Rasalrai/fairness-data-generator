@@ -207,14 +207,6 @@ def create_dataframe(nparray, k):
     # df.iloc[:,14] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
     print(df)
-    
-    # 1 TODO: Automatyzacja robienia histogramów - DONE
-    # 2 TODO: Sprawdzenie kodu
-    # 3 TODO: Etykietowanie osi - DONE
-    # 4 TODO: Co z tymi zerowymi wartościami?
-    # 5 TODO: Więcej miar
-    # 6 TODO: Zaokrąglenie wartości na osiach
-    # 7 TODO: Wyciągnięcie IR z DF
     return df
 
 
@@ -257,6 +249,14 @@ if __name__ == '__main__':
         create_heatmap(df, fm)
         for ir_selected in ir_selected_list:
             create_histogram(df, ir_selected, fm)
+            
+    # 1 TODO: Automatyzacja robienia histogramów - DONE
+    # 2 TODO: Sprawdzenie kodu
+    # 3 TODO: Etykietowanie osi - DONE
+    # 4 TODO: Co z tymi zerowymi wartościami?
+    # 5 TODO: Więcej miar
+    # 6 TODO: Zaokrąglenie wartości na osiach
+    # 7 TODO: Wyciągnięcie IR z DF - DONE
         
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
