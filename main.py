@@ -1,5 +1,4 @@
 import time
-import os
 import sys
 import math
 import numpy as np
@@ -10,7 +9,6 @@ import seaborn as sns
 
 
 def the_ratio(n, k):
-    
     m = 1
     for i in range(1, n):
         m = m * (k + i)
@@ -20,7 +18,6 @@ def the_ratio(n, k):
 
 
 def genset_k_do_increment(k, X):
-    
     a = np.shape(X)
     lastNZ = np.amax(np.matmul((X>0), np.diag(range(1, k+1))), axis=1)
     b = np.shape(lastNZ)
@@ -37,7 +34,6 @@ def genset_k_do_increment(k, X):
 
 
 def genset_k_by_inc(n, k):
-
     m = the_ratio(n, k)
 
     X = np.zeros((m, n), dtype=np.int8, order='C')
@@ -89,7 +85,6 @@ def save_txt_dataset(X, fname):
 
 
 def load_bin_dataset(fname):
-
     print("Loading BIN file: %s" % fname, end='')
     with open(fname, 'rb') as f:
         X = pickle.load(f)
@@ -103,7 +98,6 @@ def load_bin_dataset(fname):
 
 
 def load_txt_dataset(fname):
-
     print("Loading TXT file: %s" % fname, end='')
     X = np.loadtxt(fname, dtype=np.int8)
     print(" -- Done")
@@ -209,7 +203,7 @@ def create_dataframe(nparray, k):
     
     print(df)
     
-    # 1 TODO: Automatyzacja robienia histogramów 
+    # 1 TODO: Automatyzacja robienia histogramów - DONE
     # 2 TODO: Sprawdzenie kodu
     # 3 TODO: Etykietowanie osi
     # 4 TODO: Co z tymi zerowymi wartościami?
@@ -230,8 +224,8 @@ if __name__ == '__main__':
         n = 8
         k = n * 2
         print('Default params: ', end='')
+    
     print('n=%i, k=%i'%(n,k))
-
     prog_start_time = time.time()
     bin_fname = "Set(%02i,%02i).bin" % (n, k)
 
@@ -249,9 +243,6 @@ if __name__ == '__main__':
     # save_txt_dataset(X, txt_fname)
     
     df = create_dataframe(X, k)
-    #create_heatmap(df, 'tpr_diff')
-    #create_histogram(df, 15.0, 'tpr_diff')
-    
     fm_list = ['tpr_ratio', 'tpr_diff']
     ir_selected_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     
