@@ -153,6 +153,9 @@ def create_heatmap(df, fair_measure):
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
     heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
     plt.title(str(fair_measure))
+    plt.xlabel(f"Fairness Measure - {fair_measure}")
+    plt.ylabel("Imbalance Ratio")
+    plt.subplots_adjust(bottom=0.50)
     #print(df1)
     #plt.show()
     fig = heatm.get_figure()
@@ -164,6 +167,8 @@ def create_histogram(df, ir_selected, fair_measure):
     df1 = df1[[fair_measure]]
     hist = df1.hist(bins=100)
     plt.title(str(fair_measure) + ' for ir = ' + str(ir_selected))
+    plt.xlabel(f"Fairness Measure - {fair_measure}")
+    plt.ylabel("Counts")
     fig = hist[0][0].get_figure()
     fig.savefig(f"plots/histogram_{fair_measure}_{ir_selected}.png")
     #plt.show()
@@ -205,7 +210,7 @@ def create_dataframe(nparray, k):
     
     # 1 TODO: Automatyzacja robienia histogramów - DONE
     # 2 TODO: Sprawdzenie kodu
-    # 3 TODO: Etykietowanie osi
+    # 3 TODO: Etykietowanie osi - DONE
     # 4 TODO: Co z tymi zerowymi wartościami?
     # 5 TODO: Więcej miar
     
@@ -244,7 +249,7 @@ if __name__ == '__main__':
     
     df = create_dataframe(X, k)
     fm_list = ['tpr_ratio', 'tpr_diff']
-    ir_selected_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    ir_selected_list = [1, 2.2, 3, 6, 7, 15]
     
     for fm in fm_list:
         create_heatmap(df, fm)
