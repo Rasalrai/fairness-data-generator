@@ -1,4 +1,5 @@
 import time
+import os
 import sys
 import math
 import numpy as np
@@ -156,9 +157,12 @@ def get_true_pos_rate_diff(df):
 
 def create_heatmap(df, fair_measure):
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
-    sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
-    print(df1)
-    plt.show()
+    heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
+    plt.title(str(fair_measure))
+    #print(df1)
+    #plt.show()
+    fig = heatm.get_figure()
+    fig.savefig(f"plots/heatmap_{fair_measure}.png") 
     
 
 def create_histogram(df, ir_selected, fair_measure):
@@ -166,7 +170,10 @@ def create_histogram(df, ir_selected, fair_measure):
     df1 = df1[[fair_measure]]
     hist = df1.hist(bins=100)
     plt.title(str(fair_measure) + ' for ir = ' + str(ir_selected))
-    plt.show()
+    fig = hist[0][0].get_figure()
+    fig.savefig(f"plots/histogram_{fair_measure}_{ir_selected}.png")
+    #plt.show()
+    
         
     
 def create_dataframe(nparray, k):
@@ -206,6 +213,7 @@ def create_dataframe(nparray, k):
     # 2 TODO: Sprawdzenie kodu
     # 3 TODO: Etykietowanie osi
     # 4 TODO: Co z tymi zerowymi wartościami?
+    # 5 TODO: Więcej miar
     
     return df
 
@@ -242,6 +250,15 @@ if __name__ == '__main__':
     
     df = create_dataframe(X, k)
     #create_heatmap(df, 'tpr_diff')
-    create_histogram(df, 15.0, 'tpr_diff')
+    #create_histogram(df, 15.0, 'tpr_diff')
+    
+    fm_list = ['tpr_ratio', 'tpr_diff']
+    ir_selected_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    
+    for fm in fm_list:
+        create_heatmap(df, fm)
+        for ir_selected in ir_selected_list:
+            create_histogram(df, ir_selected, fm)
+        
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
