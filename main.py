@@ -57,7 +57,7 @@ def genset_k_by_inc(n, k):
 
 
 def generate_dataset(n, k):
-
+    start_time = time.time()
     print("Generating simplex data",end='')
     print('\n')
     X = genset_k_by_inc(n, k)
@@ -66,23 +66,25 @@ def generate_dataset(n, k):
     mn = np.shape(X)
     print(np.sum(X[0, :]))
     print(mn)
-
+    print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
     return X
 
 
 def save_bin_dataset(X, fname):
-
+    start_time = time.time()
     print("Saving BIN file: %s" % fname, end='')
     with open(fname, 'wb') as f:
         pickle.dump(X, f)
+    print("SaveBIN: %.2f [s]" % (time.time() - start_time))
     print(" -- Done")
 
 
 def save_txt_dataset(X, fname):
-
+    start_time = time.time()
     print("Saving TXT file: %s" % fname, end='')
     np.savetxt(fname, X, fmt='%i')
     print(" -- Done")
+    print("SaveTXT: %.2f [s]" % (time.time() - start_time))
 
 
 def load_bin_dataset(fname):
@@ -163,10 +165,11 @@ def create_histogram(df, ir_selected, fair_measure):
     df1 = df[df["ir"] == ir_selected]
     df1 = df1[[fair_measure]]
     hist = df1.hist(bins=100)
+    plt.title(str(fair_measure) + ' for ir = ' + str(ir_selected))
     plt.show()
         
     
-def read_into_dataframe(nparray, k):
+def create_dataframe(nparray, k):
     
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
     
@@ -174,10 +177,6 @@ def read_into_dataframe(nparray, k):
     get_imbalance_ratio(df)
     get_class_minority_ratio(df)
     get_group_minority_ratio(df)
-    
-    #pozytywna to mniejszosciowa ma byc
-    #gr1/ gr1+gr2 = minority ratio, dla grup i dla klas 
-    #usunac normalizacje? 
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
     
@@ -202,9 +201,12 @@ def read_into_dataframe(nparray, k):
     # df.iloc[:,14] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
     print(df)
-    #create_heatmap(df, 'tpr_diff')
     
-    create_histogram(df, 15.0, 'tpr_diff')
+    # 1 TODO: Automatyzacja robienia histogramów 
+    # 2 TODO: Sprawdzenie kodu
+    # 3 TODO: Etykietowanie osi
+    # 4 TODO: Co z tymi zerowymi wartościami?
+    
     return df
 
 
@@ -226,24 +228,20 @@ if __name__ == '__main__':
     bin_fname = "Set(%02i,%02i).bin" % (n, k)
 
     # Data generating
-    # start_time = time.time()
     # X = generate_dataset(n, k)
-    # print("GenSimpBIN: %.2f [s]" % (time.time() - start_time))
     
     # Data saving - bin
-    # start_time = time.time()
     # save_bin_dataset(X, bin_fname)
-    # print("SaveBIN: %.2f [s]" % (time.time() - start_time))
 
     # Data loading - bin
     X = load_bin_dataset(bin_fname)
     
     # Data saving - txt
     # txt_fname = "Set(%02i,%02i).txt" % (n, k)
-    # start_time = time.time()
     # save_txt_dataset(X, txt_fname)
-    # print("SaveTXT: %.2f [s]" % (time.time() - start_time))
     
-    read_into_dataframe(X, k)
+    df = create_dataframe(X, k)
+    #create_heatmap(df, 'tpr_diff')
+    create_histogram(df, 15.0, 'tpr_diff')
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
