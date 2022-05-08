@@ -166,11 +166,11 @@ def create_histogram(df, ir_selected, fair_measure):
     df1 = df[df["ir"] == ir_selected]
     df1 = df1[[fair_measure]]
     hist = df1.hist(bins=100)
-    plt.title(str(fair_measure) + ' for ir = ' + str(ir_selected))
+    plt.title(str(fair_measure) + ' for ir = ' + str(round(ir_selected,2)))
     plt.xlabel(f"Fairness Measure - {fair_measure}")
     plt.ylabel("Counts")
     fig = hist[0][0].get_figure()
-    fig.savefig(f"plots/histogram_{fair_measure}_{ir_selected}.png")
+    fig.savefig(f"plots/histogram_{fair_measure}_{round(ir_selected,2)}.png")
     #plt.show()
     
         
@@ -213,7 +213,8 @@ def create_dataframe(nparray, k):
     # 3 TODO: Etykietowanie osi - DONE
     # 4 TODO: Co z tymi zerowymi wartościami?
     # 5 TODO: Więcej miar
-    
+    # 6 TODO: Zaokrąglenie wartości na osiach
+    # 7 TODO: Wyciągnięcie IR z DF
     return df
 
 
@@ -249,7 +250,8 @@ if __name__ == '__main__':
     
     df = create_dataframe(X, k)
     fm_list = ['tpr_ratio', 'tpr_diff']
-    ir_selected_list = [1, 2.2, 3, 6, 7, 15]
+    ir_selected_list = df['ir'].unique().tolist()
+
     
     for fm in fm_list:
         create_heatmap(df, fm)
