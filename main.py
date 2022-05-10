@@ -129,6 +129,7 @@ def get_group_minority_ratio(df):
     return df
 
 
+#ratio of true positive rates
 def get_true_pos_rate_ratio(df):
     df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
     return df
@@ -144,8 +145,22 @@ def get_females_true_pos_rate(df):
     return df
 
 
+#difference of true positive rates
 def get_true_pos_rate_diff(df):
     df['tpr_diff'] = df.f_tpr - df.m_tpr
+    return df
+
+
+#each group has the same probability of being classified with positive outcome
+#difference of probabilities
+def get_statistical_parity(df):
+    df["stat_parity"] = (df.f_tp + df.f_fp)/(df.f_tp + df.f_fp + df.f_tn + df.f_fn) - (df.m_tp + df.m_fp)/(df.m_tp + df.m_fp + df.m_tn + df.m_fn)
+    return df
+
+
+#similiar to statistical parity, but using ratio
+def get_disparate_impact(df):
+    df["disp_impact"] = ((df.f_tp + df.f_fp)/(df.f_tp + df.f_fp + df.f_tn + df.f_fn)) / ((df.m_tp + df.m_fp)/(df.m_tp + df.m_fp + df.m_tn + df.m_fn))
     return df
 
 
@@ -174,7 +189,6 @@ def create_histogram(df, ir_selected, fair_measure):
     #plt.show()
     
         
-    
 def create_dataframe(nparray, k):
     
     df = pd.DataFrame(nparray, columns=['m_tp', 'm_fp', 'm_tn', 'm_fn', 'f_tp', 'f_fp', 'f_tn', 'f_fn'])
