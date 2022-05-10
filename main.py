@@ -164,6 +164,36 @@ def get_disparate_impact(df):
     return df
 
 
+#accuracy equality ratio
+def get_acc_equality_ratio(df):
+    return
+
+
+#accuracy equality difference
+def get_acc_equality_diff(df):
+    return
+
+
+#predictive equality ratio
+def get_pred_equality_ratio(df):
+    return
+
+
+#predictive equality difference
+def get_pred_equality_diff(df):
+    return
+
+
+#predictive parity ratio
+def get_pred_parity_ratio(df):
+    return
+
+
+#predictive parity difference
+def get_pred_parity_diff(df):
+    return
+
+
 def create_heatmap(df, fair_measure):
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
     heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
