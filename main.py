@@ -129,12 +129,6 @@ def get_group_minority_ratio(df):
     return df
 
 
-#ratio of true positive rates
-def get_true_pos_rate_ratio(df):
-    df['tpr_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
-    return df
-
-
 def get_men_true_pos_rate(df):
     df['m_tpr'] = df.m_tp/(df.m_tp + df.m_fn)
     return df
@@ -145,9 +139,16 @@ def get_females_true_pos_rate(df):
     return df
 
 
+#ratio of true positive rates
+#equal opportunity
+def get_equal_opp_ratio(df):
+    df['equal_opp_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
+    return df
+
+#equal opportunity
 #difference of true positive rates
-def get_true_pos_rate_diff(df):
-    df['tpr_diff'] = df.f_tpr - df.m_tpr
+def get_equal_opp_diff(df):
+    df['equal_opp_diff'] = df.f_tpr - df.m_tpr
     return df
 
 
@@ -166,32 +167,38 @@ def get_disparate_impact(df):
 
 #accuracy equality ratio
 def get_acc_equality_ratio(df):
-    return
+    df["acc_equality_ratio"] = ((df.f_tp + df.f_tn)/(df.f_tp + df.f_fp + df.f_tn + df.f_fn)) / ((df.m_tp + df.m_tn)/(df.m_tp + df.m_fp + df.m_tn + df.m_fn))
+    return df
 
 
 #accuracy equality difference
 def get_acc_equality_diff(df):
-    return
+    df["acc_equality_diff"] = ((df.f_tp + df.f_tn)/(df.f_tp + df.f_fp + df.f_tn + df.f_fn)) - ((df.m_tp + df.m_tn)/(df.m_tp + df.m_fp + df.m_tn + df.m_fn))
+    return df
 
 
 #predictive equality ratio
 def get_pred_equality_ratio(df):
-    return
+    df["pred_equality_ratio"] = (df.f_fp/(df.f_fp + df.f_tn)) / (df.m_fp/(df.m_fp + df.m_tn))
+    return df
 
 
 #predictive equality difference
 def get_pred_equality_diff(df):
-    return
+    df["pred_equality_diff"] = (df.f_fp/(df.f_fp + df.f_tn)) - (df.m_fp/(df.m_fp + df.m_tn))
+    return df
 
 
 #predictive parity ratio
 def get_pred_parity_ratio(df):
-    return
+    df["pred_parity_ratio"] = (df.f_tp/(df.f_tp + df.f_fp)) / (df.m_tp/(df.m_tp + df.m_fp))
+    return df
 
 
 #predictive parity difference
 def get_pred_parity_diff(df):
-    return
+    df["pred_parity_diff"] = (df.f_tp/(df.f_tp + df.f_fp)) - (df.m_tp/(df.m_tp + df.m_fp))
+    return df
 
 
 def create_heatmap(df, fair_measure):
@@ -207,10 +214,10 @@ def create_heatmap(df, fair_measure):
     fig.savefig(f"plots/heatmap_{fair_measure}.png") 
     
 
-def create_histogram(df, ir_selected, fair_measure):
+def create_histogram(df, ir_selected, fair_measure, bins_selected):
     df1 = df[df["ir"] == ir_selected]
     df1 = df1[[fair_measure]]
-    hist = df1.hist(bins=100)
+    hist = df1.hist(bins=bins_selected)
     plt.title(str(fair_measure) + ' for ir = ' + str(round(ir_selected,2)))
     plt.xlabel(f"Fairness Measure - {fair_measure}")
     plt.ylabel("Counts")
@@ -239,9 +246,16 @@ def create_dataframe(nparray, k):
     
     # calculate fairness measures
     # equal opportunity ratio TP/(TP+FN)
-    get_true_pos_rate_ratio(df)
-    # equal opportunity difference
-    get_true_pos_rate_diff(df)
+    get_equal_opp_ratio(df)
+    get_equal_opp_diff(df)
+    get_acc_equality_diff(df)
+    get_acc_equality_ratio(df)
+    get_statistical_parity(df)
+    get_disparate_impact(df)
+    get_pred_equality_ratio(df)
+    get_pred_equality_diff(df)
+    get_pred_parity_ratio(df)
+    get_pred_parity_diff(df)
     
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
@@ -285,20 +299,20 @@ if __name__ == '__main__':
     # save_txt_dataset(X, txt_fname)
     
     df = create_dataframe(X, k)
-    fm_list = ['tpr_ratio', 'tpr_diff']
+    fm_list = ['equal_opp_ratio', 'equal_opp_diff', 'stat_parity', 'disp_impact', 'acc_equality_ratio', 'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 'pred_parity_diff']
     ir_selected_list = df['ir'].unique().tolist()
 
     
     for fm in fm_list:
         create_heatmap(df, fm)
         for ir_selected in ir_selected_list:
-            create_histogram(df, ir_selected, fm)
+            create_histogram(df, ir_selected, fm, 100)
             
     # 1 TODO: Automatyzacja robienia histogramów - DONE
     # 2 TODO: Sprawdzenie kodu
     # 3 TODO: Etykietowanie osi - DONE
     # 4 TODO: Co z tymi zerowymi wartościami?
-    # 5 TODO: Więcej miar
+    # 5 TODO: Więcej miar - DONE
     # 6 TODO: Zaokrąglenie wartości na osiach
     # 7 TODO: Wyciągnięcie IR z DF - DONE
         
