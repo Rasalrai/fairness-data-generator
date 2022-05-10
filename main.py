@@ -145,6 +145,7 @@ def get_equal_opp_ratio(df):
     df['equal_opp_ratio'] = (df.f_tp/(df.f_tp + df.f_fn)) / (df.m_tp/(df.m_tp + df.m_fn))
     return df
 
+
 #equal opportunity
 #difference of true positive rates
 def get_equal_opp_diff(df):
@@ -245,7 +246,6 @@ def create_dataframe(nparray, k):
     df.replace([np.inf, -np.inf], 0, inplace=True)
     
     # calculate fairness measures
-    # equal opportunity ratio TP/(TP+FN)
     get_equal_opp_ratio(df)
     get_equal_opp_diff(df)
     get_acc_equality_diff(df)
@@ -299,7 +299,8 @@ if __name__ == '__main__':
     # save_txt_dataset(X, txt_fname)
     
     df = create_dataframe(X, k)
-    fm_list = ['equal_opp_ratio', 'equal_opp_diff', 'stat_parity', 'disp_impact', 'acc_equality_ratio', 'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 'pred_parity_diff']
+    fm_list = ['equal_opp_ratio', 'equal_opp_diff', 'stat_parity', 'disp_impact', 'acc_equality_ratio', 
+               'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 'pred_parity_diff']
     ir_selected_list = df['ir'].unique().tolist()
 
     
