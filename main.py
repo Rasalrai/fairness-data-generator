@@ -110,22 +110,13 @@ def load_txt_dataset(fname):
 
 
 def get_group_ratio(df):
-    df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn)
+    df['gr'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / (df.m_tp + df.m_fp + df.m_tn + df.m_fn + df.f_tp + df.f_fp + df.f_tn + df.f_fn)
     return df
 
 
 def get_imbalance_ratio(df):
-    df['ir'] =  (df.f_tp + df.f_fp + df.m_tp + df.m_fp) / (df.f_tn + df.f_fn + df.m_tn + df.m_fn)
-    return df
-
-
-def get_class_minority_ratio(df):
-    df['mr_class'] = (df.f_tp + df.f_fp + df.m_tp + df.m_fp) / ((df.f_tp + df.f_fp + df.m_tp + df.m_fp) + (df.f_tn + df.f_fn + df.m_tn + df.m_fn))
-    return df
-
-
-def get_group_minority_ratio(df):
-    df['mr_group'] = (df.f_tp + df.f_fp + df.f_tn + df.f_fn) / ((df.f_tp + df.f_fp + df.f_tn + df.f_fn) + (df.m_tp + df.m_fp + df.m_tn + df.m_fn))
+    df['ir'] =  (df.f_tp + df.f_fn + df.m_tp + df.m_fn) / (df.f_tn + df.f_fn + df.m_tn + df.m_fn + df.f_fp +df.f_tp + df.m_fp + df.m_tp)
+    #IR DLA PRAWDZ KLAS
     return df
 
 
@@ -204,7 +195,7 @@ def get_pred_parity_diff(df):
 
 def create_heatmap(df, fair_measure):
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
-    heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), cmap="PiYG", annot=False)
+    heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), annot=False, cmap='cool')
     plt.title(str(fair_measure))
     plt.xlabel(f"Fairness Measure - {fair_measure}")
     plt.ylabel("Imbalance Ratio")
@@ -233,8 +224,6 @@ def create_dataframe(nparray, k):
     
     get_group_ratio(df)
     get_imbalance_ratio(df)
-    get_class_minority_ratio(df)
-    get_group_minority_ratio(df)
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
     
@@ -316,6 +305,9 @@ if __name__ == '__main__':
     # 5 TODO: Więcej miar - DONE
     # 6 TODO: Zaokrąglenie wartości na osiach
     # 7 TODO: Wyciągnięcie IR z DF - DONE
+    # 8 heatmapa - nie count a prawdopodob. (przy zadanym ir jaki procent przykladow mial dany fairness)
+    # scala color sequential
+    # policzyć n dla danego zbioru
         
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
