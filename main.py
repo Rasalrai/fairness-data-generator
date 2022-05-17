@@ -195,7 +195,14 @@ def get_pred_parity_diff(df):
 
 def create_heatmap(df, fair_measure):
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
-    heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='counts'), annot=False, cmap='cool')
+    print(df1)
+    ir_counts = df1.groupby(['ir'])['counts'].sum().reset_index(name='ir_counts')
+    print(ir_counts)
+    df1 = pd.merge(df1, ir_counts, on='ir', how='left')
+    print(df1)
+    df1['probability'] = df1.counts / df1.ir_counts
+    print(df1)
+    heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='probability'), annot=False, cmap='cool')
     plt.title(str(fair_measure))
     plt.xlabel(f"Fairness Measure - {fair_measure}")
     plt.ylabel("Imbalance Ratio")
@@ -288,10 +295,14 @@ if __name__ == '__main__':
     # save_txt_dataset(X, txt_fname)
     
     df = create_dataframe(X, k)
-    fm_list = ['equal_opp_ratio', 'equal_opp_diff', 'stat_parity', 'disp_impact', 'acc_equality_ratio', 
-               'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 'pred_parity_diff']
+    fm_list = ['equal_opp_ratio', 
+               'equal_opp_diff', 'stat_parity', 'disp_impact', 'acc_equality_ratio', 
+               'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 'pred_parity_diff'
+               ]
     ir_selected_list = df['ir'].unique().tolist()
 
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
     
     for fm in fm_list:
         create_heatmap(df, fm)
@@ -305,9 +316,9 @@ if __name__ == '__main__':
     # 5 TODO: Więcej miar - DONE
     # 6 TODO: Zaokrąglenie wartości na osiach
     # 7 TODO: Wyciągnięcie IR z DF - DONE
-    # 8 heatmapa - nie count a prawdopodob. (przy zadanym ir jaki procent przykladow mial dany fairness)
-    # scala color sequential
-    # policzyć n dla danego zbioru
+    # 8 heatmapa - nie count a prawdopodob. (przy zadanym ir jaki procent przykladow mial dany fairness) - DONE
+    # scala color sequential - DONE
+    # policzyć n dla danego zbioru w df
         
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
