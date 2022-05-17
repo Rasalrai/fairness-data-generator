@@ -6,6 +6,7 @@ import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from matplotlib.ticker import FormatStrFormatter
 
 
 def the_ratio(n, k):
@@ -203,9 +204,14 @@ def create_heatmap(df, fair_measure):
     df1['probability'] = df1.counts / df1.ir_counts
     print(df1)
     heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='probability'), annot=False, cmap='cool')
+    # majorFormatter = FormatStrFormatter('%0.2f')
+    # heatm.xaxis.set_major_formatter(majorFormatter)
+    # heatm.yaxis.set_major_formatter(majorFormatter)
+    
+    heatm.invert_yaxis()
     plt.title(str(fair_measure))
     plt.xlabel(f"Fairness Measure - {fair_measure}")
-    plt.ylabel("Imbalance Ratio")
+    plt.ylabel("Minority Ratio")
     plt.subplots_adjust(bottom=0.50)
     #print(df1)
     #plt.show()
