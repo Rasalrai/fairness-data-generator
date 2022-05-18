@@ -14,7 +14,6 @@ def the_ratio(n, k):
     for i in range(1, n):
         m = m * (k + i)
     m = round(m / math.factorial(n - 1))
-    print(m)
     return m
 
 
@@ -195,40 +194,41 @@ def get_pred_parity_diff(df):
 
 
 def create_heatmap(df, fair_measure):
+    plt.clf()
+
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
-    print(df1)
     ir_counts = df1.groupby(['ir'])['counts'].sum().reset_index(name='ir_counts')
-    print(ir_counts)
     df1 = pd.merge(df1, ir_counts, on='ir', how='left')
-    print(df1)
     df1['probability'] = df1.counts / df1.ir_counts
-    print(df1)
-    heatm = sns.heatmap(df1.pivot('ir', fair_measure, values='probability'), annot=False, cmap='cool')
-    # majorFormatter = FormatStrFormatter('%0.2f')
-    # heatm.xaxis.set_major_formatter(majorFormatter)
-    # heatm.yaxis.set_major_formatter(majorFormatter)
-    
-    heatm.invert_yaxis()
+
+    #however i think this is not a final form
+    heatm = sns.histplot(df1, x="ir", y=fair_measure, weights="probability", binwidth=(0.0625, 0.05), cbar=True)
+
     plt.title(str(fair_measure))
-    plt.xlabel(f"Fairness Measure - {fair_measure}")
-    plt.ylabel("Minority Ratio")
-    plt.subplots_adjust(bottom=0.50)
-    #print(df1)
-    #plt.show()
+    plt.ylabel(f"Fairness Measure - {fair_measure}")
+    plt.xlabel("Minority Ratio")
+    
     fig = heatm.get_figure()
-    fig.savefig(f"plots/heatmap_{fair_measure}.png") 
+    fig.savefig(f"plots/heatmap_{fair_measure}.png")
+    return
     
 
 def create_histogram(df, ir_selected, fair_measure, bins_selected):
+    plt.clf()
+
     df1 = df[df["ir"] == ir_selected]
     df1 = df1[[fair_measure]]
+    
     hist = df1.hist(bins=bins_selected)
+    
     plt.title(str(fair_measure) + ' for ir = ' + str(round(ir_selected,2)))
     plt.xlabel(f"Fairness Measure - {fair_measure}")
     plt.ylabel("Counts")
+    
     fig = hist[0][0].get_figure()
     fig.savefig(f"plots/histogram_{fair_measure}_{round(ir_selected,2)}.png")
     #plt.show()
+    return
     
         
 def create_dataframe(nparray, k):
@@ -262,11 +262,7 @@ def create_dataframe(nparray, k):
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
     df.replace(np.NaN, 0, inplace=True)
-    
-    # normalize fairness measure 
-    # df.iloc[:,14] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
-    
-    print(df)
+
     return df
 
 
@@ -307,8 +303,8 @@ if __name__ == '__main__':
                ]
     ir_selected_list = df['ir'].unique().tolist()
 
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_rows', None)
+    # pd.set_option('display.max_columns', None)
+    # pd.set_option('display.max_rows', None)
     
     for fm in fm_list:
         create_heatmap(df, fm)
