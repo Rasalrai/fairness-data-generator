@@ -6,7 +6,6 @@ import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from matplotlib.ticker import FormatStrFormatter
 
 
 def the_ratio(n, k):
@@ -201,9 +200,13 @@ def create_heatmap(df, fair_measure):
     df1 = pd.merge(df1, ir_counts, on='ir', how='left')
     df1['probability'] = df1.counts / df1.ir_counts
 
-    #however i think this is not a final form
-    heatm = sns.histplot(df1, x="ir", y=fair_measure, weights="probability", binwidth=(0.0625, 0.05), cbar=True)
+    heatm = sns.histplot(df1, x="ir", y=fair_measure, weights="probability", binwidth=(0.0625, 0.05), cmap="winter")
+     
+    norm = plt.Normalize(df1['probability'].min(), df1['probability'].max())
+    sm = plt.cm.ScalarMappable(cmap="winter", norm=norm)
+    sm.set_array([])
 
+    heatm.figure.colorbar(sm)
     plt.title(str(fair_measure))
     plt.ylabel(f"Fairness Measure - {fair_measure}")
     plt.xlabel("Minority Ratio")
@@ -227,7 +230,6 @@ def create_histogram(df, ir_selected, fair_measure, bins_selected):
     
     fig = hist[0][0].get_figure()
     fig.savefig(f"plots/histogram_{fair_measure}_{round(ir_selected,2)}.png")
-    #plt.show()
     return
     
         
@@ -311,15 +313,7 @@ if __name__ == '__main__':
         for ir_selected in ir_selected_list:
             create_histogram(df, ir_selected, fm, 100)
             
-    # 1 TODO: Automatyzacja robienia histogramów - DONE
-    # 2 TODO: Sprawdzenie kodu
-    # 3 TODO: Etykietowanie osi - DONE
-    # 4 TODO: Co z tymi zerowymi wartościami?
-    # 5 TODO: Więcej miar - DONE
-    # 6 TODO: Zaokrąglenie wartości na osiach
-    # 7 TODO: Wyciągnięcie IR z DF - DONE
-    # 8 heatmapa - nie count a prawdopodob. (przy zadanym ir jaki procent przykladow mial dany fairness) - DONE
-    # scala color sequential - DONE
+
     # policzyć n dla danego zbioru w df
         
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
