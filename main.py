@@ -278,7 +278,7 @@ if __name__ == '__main__':
         # k - size of set; n -  error matrix combinations
         # k should be a multiple of n, (otherwise a potentially incomplete data set is generated)
         n = 8
-        k = n * 2
+        k = n * 5
         print('Default params: ', end='')
     
     print('n=%i, k=%i'%(n,k))
