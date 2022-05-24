@@ -207,8 +207,10 @@ def create_heatmap(df, fair_measure):
     sm.set_array([])
 
     heatm.figure.colorbar(sm)
-    plt.title(str(fair_measure))
-    plt.ylabel(f"Fairness Measure - {fair_measure}")
+    
+    fm_name = fm_full_names[fair_measure]
+    plt.title(str(fm_name))
+    plt.ylabel(f"Fairness Measure - {fm_name}")
     plt.xlabel("Minority Ratio")
     
     fig = heatm.get_figure()
@@ -224,8 +226,9 @@ def create_histogram(df, ir_selected, fair_measure, bins_selected):
     
     hist = df1.hist(bins=bins_selected)
     
-    plt.title(str(fair_measure) + ' for ir = ' + str(round(ir_selected,2)))
-    plt.xlabel(f"Fairness Measure - {fair_measure}")
+    fm_name = fm_full_names[fair_measure]
+    plt.title(str(fm_name) + ' for ir = ' + str(round(ir_selected,2)))
+    plt.xlabel(f"Fairness Measure - {fm_name}")
     plt.ylabel("Counts")
     
     fig = hist[0][0].get_figure()
@@ -301,9 +304,24 @@ if __name__ == '__main__':
     df = create_dataframe(X, k)
     fm_list = ['equal_opp_ratio', 
                'equal_opp_diff', 'stat_parity', 'disp_impact', 'acc_equality_ratio', 
-               'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 'pred_parity_diff'
+               'acc_equality_diff', 'pred_equality_ratio', 'pred_equality_diff', 'pred_parity_ratio', 
+               'pred_parity_diff'
                ]
+    
     ir_selected_list = df['ir'].unique().tolist()
+
+    fm_full_names = {
+        'equal_opp_ratio': 'Equal Opportunity Ratio',
+        'equal_opp_diff': 'Equal Opportunity Difference',
+        'stat_parity': 'Statistical Parity',
+        'disp_impact': 'Disparate Impact',
+        'acc_equality_ratio': 'Accuracy Equality Ratio',
+        'acc_equality_diff': 'Accuracy Equality Difference',
+        'pred_equality_ratio': 'Predictive Equality Ratio',
+        'pred_equality_diff': 'Predictive Equality Difference',
+        'pred_parity_ratio': 'Predictive Parity Ratio',
+        'pred_parity_diff': 'Predictive Parity Difference'
+    }
 
     # pd.set_option('display.max_columns', None)
     # pd.set_option('display.max_rows', None)
