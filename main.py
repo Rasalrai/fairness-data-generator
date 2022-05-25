@@ -218,7 +218,7 @@ def create_heatmap(df, fair_measure):
     return
     
 
-def create_histogram(df, ir_selected, fair_measure, bins_selected):
+def create_histogram_ir(df, ir_selected, fair_measure, bins_selected):
     plt.clf()
 
     df1 = df[df["ir"] == ir_selected]
@@ -232,9 +232,27 @@ def create_histogram(df, ir_selected, fair_measure, bins_selected):
     plt.ylabel("Counts")
     
     fig = hist[0][0].get_figure()
-    fig.savefig(f"plots/histogram_{fair_measure}_{round(ir_selected,2)}.png")
+    fig.savefig(f"plots/histogram_{fair_measure}_ir_{round(ir_selected,2)}.png")
     return
     
+    
+def create_histogram_gr(df, gr_selected, fair_measure, bins_selected):
+    plt.clf()
+
+    df1 = df[df["gr"] == gr_selected]
+    df1 = df1[[fair_measure]]
+    
+    hist = df1.hist(bins=bins_selected)
+    
+    fm_name = fm_full_names[fair_measure]
+    plt.title(str(fm_name) + ' for gr = ' + str(round(gr_selected,2)))
+    plt.xlabel(f"Fairness Measure - {fm_name}")
+    plt.ylabel("Counts")
+    
+    fig = hist[0][0].get_figure()
+    fig.savefig(f"plots/histogram_{fair_measure}_gr_{round(gr_selected,2)}.png")
+    return    
+        
         
 def create_dataframe(nparray, k):
     
@@ -244,9 +262,6 @@ def create_dataframe(nparray, k):
     get_imbalance_ratio(df)
     
     df.replace([np.inf, -np.inf], 0, inplace=True)
-    
-    # normalize gr & ir
-    # df.iloc[:,8:10] = df.iloc[:,0:-1].apply(lambda x: (x-x.min())/(x.max()-x.min()), axis=0)
     
     get_men_true_pos_rate(df)
     get_females_true_pos_rate(df)
@@ -309,6 +324,7 @@ if __name__ == '__main__':
                ]
     
     ir_selected_list = df['ir'].unique().tolist()
+    gr_selected_list = df['gr'].unique().tolist()
 
     fm_full_names = {
         'equal_opp_ratio': 'Equal Opportunity Ratio',
@@ -329,7 +345,9 @@ if __name__ == '__main__':
     for fm in fm_list:
         create_heatmap(df, fm)
         for ir_selected in ir_selected_list:
-            create_histogram(df, ir_selected, fm, 100)
+            create_histogram_ir(df, ir_selected, fm, 100)
+        for gr_selected in gr_selected_list:
+            create_histogram_gr(df, gr_selected, fm, 100)
             
 
     # policzyć n dla danego zbioru w df
