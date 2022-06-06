@@ -195,15 +195,17 @@ def get_pred_parity_diff(df):
 def create_heatmap(df, fair_measure):
     plt.clf()
 
+    li = sns.color_palette("light:b", as_cmap=True)
+
     df1 = df.groupby(['ir', fair_measure]).size().reset_index(name='counts')
     ir_counts = df1.groupby(['ir'])['counts'].sum().reset_index(name='ir_counts')
     df1 = pd.merge(df1, ir_counts, on='ir', how='left')
     df1['probability'] = df1.counts / df1.ir_counts
 
-    heatm = sns.histplot(df1, x="ir", y=fair_measure, weights="probability", binwidth=(0.0625, 0.05), cmap="winter")
+    heatm = sns.histplot(df1, x="ir", y=fair_measure, weights="probability", binwidth=(0.0625, 0.05), cmap=li)
      
     norm = plt.Normalize(df1['probability'].min(), df1['probability'].max())
-    sm = plt.cm.ScalarMappable(cmap="winter", norm=norm)
+    sm = plt.cm.ScalarMappable(cmap=li, norm=norm)
     sm.set_array([])
 
     heatm.figure.colorbar(sm)
@@ -339,7 +341,7 @@ if __name__ == '__main__':
         'pred_parity_diff': 'Predictive Parity Difference'
     }
 
-    # pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_columns', None)
     # pd.set_option('display.max_rows', None)
     
     for fm in fm_list:
@@ -349,8 +351,5 @@ if __name__ == '__main__':
         for gr_selected in gr_selected_list:
             create_histogram_gr(df, gr_selected, fm, 100)
             
-
-    # policzyć n dla danego zbioru w df
-        
     print("Total time: %.2f [s]" % (time.time() - prog_start_time))
 
