@@ -342,7 +342,6 @@ if __name__ == '__main__':
     }
 
     pd.set_option('display.max_columns', None)
-    # pd.set_option('display.max_rows', None)
     
     for fm in fm_list:
         create_heatmap(df, fm)
