@@ -19,4 +19,4 @@ Some additional measures were also calculated but not used in the visualization 
 
 This project consists of two main files:
 - sets_creation.py: generates error matrixes with all possible scenarios and saves them to txt/bin (we need this to visualize measures aggregated by different imbalance values)
-- fairness_plots.ipynb : reads the files, creates pandas dataframe and visualizes the data.
+- fairness_plots.ipynb: reads the files, creates pandas dataframe and visualizes the data.
