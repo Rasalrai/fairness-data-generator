@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 
-Set(08,40).bin
+Set*.bin
 out/
+.idea/
