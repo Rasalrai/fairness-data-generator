@@ -132,7 +132,7 @@ if __name__ == '__main__':
     # X = load_bin_dataset(bin_fname)
 
     # Data saving - txt
-    txt_fname = f'Set({n:02},{k:02}).txt'
-    save_txt_dataset(X, txt_fname)
+    # txt_fname = f'Set({n:02},{k:02}).txt'
+    # save_txt_dataset(X, txt_fname)
 
     print(f'Total time: {time.time() - prog_start_time:.2f} [s]')
